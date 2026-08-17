@@ -29,10 +29,6 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/markebora/worship-chords/song-analyzer-v2/song-analyzer.js -o dist/song-analyzer.js
           test -s dist/index.html
           test -s dist/song-analyzer.js
-          echo "Test site assembled from worship-chords/song-analyzer-v2"
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

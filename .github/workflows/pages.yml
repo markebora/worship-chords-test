@@ -21,14 +21,26 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare test site from analyzer branch
+      - name: Prepare test site
         run: |
           set -e
           mkdir -p dist
           curl -fsSL https://raw.githubusercontent.com/markebora/worship-chords/song-analyzer-v2/index.html -o dist/index.html
           curl -fsSL https://raw.githubusercontent.com/markebora/worship-chords/song-analyzer-v2/song-analyzer.js -o dist/song-analyzer.js
+          curl -fsSL https://raw.githubusercontent.com/markebora/worship-chords-test/main/chord-bank.js -o dist/chord-bank.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('dist/index.html')
+          s=p.read_text()
+          old='<script src="song-analyzer.js"></script>'
+          new='<script src="chord-bank.js"></script>\n<script src="song-analyzer.js"></script>'
+          if old not in s:
+              raise SystemExit('song-analyzer.js script tag not found')
+          p.write_text(s.replace(old,new,1))
+          PY
           test -s dist/index.html
           test -s dist/song-analyzer.js
+          test -s dist/chord-bank.js
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
